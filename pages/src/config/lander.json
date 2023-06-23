@@ -1,0 +1,23 @@
+{
+  "campaigns": {
+    "ep": {
+        "headline": "Extraordinary investment tooling for extraordinary people",
+        "tagline": "Anko Investor combines tens of thousands of financial sources and signals to provide up to the second Stock Market Forecasts in the most accurate AI platform built for traders of any size.",
+        "cta": "I'm in!",
+        "hint": "psst.... your email goes here"
+    },
+      "rr": {
+          "headline": "Risk: you no longer enjoy doing your own analysis. Reward: you no longer have to.",
+          "tagline": "Anko Investor is a stock market analyst in your pocket. The only thing you have to do is wait.",
+          "cta": "Join the movement!",
+          "hint": "Enter your email"
+    },
+    "nb": {
+      "headline": "No bullshit market forecast APIs and integrations",
+        "tagline": "Developer first, and with unparalleled accuracy, Anko Investor analyses tens of thousands of signals with a suite of machine learning processes to provide up to the second Stock Market Forecasts. With a free-tier that stays free, too, it's easy to see why everyone is talking about Anko Investor.",
+        "cta": "Make it so",
+        "hint": "Email Address"
+    }
+  },
+  "defaultCampaign": "ep"
+}
