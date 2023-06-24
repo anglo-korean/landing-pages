@@ -1,0 +1,140 @@
+body {
+    background: linear-gradient(90deg, rgba(31,31,31,1) 0%, rgba(53,59,78,1) 100%);
+    margin: 0 auto;
+}
+
+.App {
+    font-family: Avenir, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-align: center;
+    color: #2c3e50;
+    padding: 10px 64px;
+    position: absolute;
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+
+.landingWrapper__Uaxe8 {
+    margin: auto;
+    min-height: 100vh;
+    top: 0; left: 0; bottom: 0; right: 0;
+}
+
+h1.huge__OLAIX {
+    font-size: 5em;
+}
+
+h2.huge__OLAIX {
+    font-size: 3em;
+}
+
+@media only screen and (max-width: 768px) {
+    h1.huge__OLAIX {
+        font-size: 2.5em;
+    }
+
+    h2.huge__OLAIX {
+        font-size: 1.5em;
+    }
+}
+
+.claimBox__B6zhW {
+    color: #fff;
+    text-align: left;
+    padding: 3rem;
+}
+
+.landing__pPD-Z {
+    color: #fff;
+}
+
+.landing__pPD-Z a {
+    color: #fff;
+    font-weight: bold;
+    text-decoration-line: underline;
+    text-decoration-color: #fff;
+    text-decoration-thickness: 0.2em;
+}
+
+.landing__pPD-Z strong {
+    font-weight: 900;
+}
+
+.hero__\+mwTj {
+    margin-bottom: 64px;
+    text-align: left;
+    background-image: url(/0bfacdc53761fd1cab75d704b21f87c2.svg);
+    background-position: right center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.tagline__F3ZGf {
+    margin-top: 32px !important;
+    text-align: left;
+}
+
+.centered__-pGG5 {
+    text-align: center;
+}
+
+.hero__\+mwTj button {
+    margin: 16px;
+    font-size: 24px;
+}
+.signup__fk6nY button, .signup__fk6nY form, .signup__fk6nY input {
+  height: 32px;
+  box-sizing: border-box;
+  margin:0;
+}
+.signup__fk6nY button {
+  float: right;
+  margin-left: -1px;
+  /* border: solid 1px gray; */
+
+  background-color: #222;
+  border-radius: 4px;
+  border-style: none;
+  box-sizing: border-box;
+  color: #fff;
+  cursor: pointer;
+  font-family: "Farfetch Basis","Helvetica Neue",Arial,sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0;
+  outline: none;
+  overflow: hidden;
+  padding: 9px 20px 8px;
+  text-align: center;
+  text-transform: uppercase;
+  -ms-user-select: none;
+      user-select: none;
+  -webkit-user-select: none;
+  -ms-touch-action: manipulation;
+      touch-action: manipulation;
+}
+.signup__fk6nY input {
+  border:0;
+  width: 100%;
+  padding: 0 3px;
+  height: 31px;
+}
+.signup__fk6nY .inputDiv__rXrO7 {
+  overflow: hidden;
+  border: solid 1px gray;
+}
+
+.signup__fk6nY button:hover,
+.signup__fk6nY button:focus {
+  opacity: .75;
+}
+
+strong.waitlist__cRoy9 {
+    font-weight: 900;
+    font-size: 120%;
+}
+
+
+/*# sourceMappingURL=ssr-bundle.134d3.css.map*/
