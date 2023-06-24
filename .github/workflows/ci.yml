@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - '*'
+    tags:
+      - '*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - uses: actions/setup-go@v3
+      with:
+        go-version: '>=1.20.0'
+
+    - name: Test signups function
+      run: go test -v ./...
+      working-directory: ./do-function/packages/lander/signups
+
+    - uses: actions/setup-node@v2
+      with:
+        node-version: '20'
+
+    - name: Build preact app
+      run: |
+        npm i
+        npm run build
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || contains(github.ref, 'refs/tags')
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install doctl
+      uses: digitalocean/action-doctl@v2
+      with:
+        token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+    - name: Deploy functions
+      run: |
+        envsubst < do-function/project.yml.tmpl > do-function/project.yml
+        doctl serverless install
+        doctl serverless connect ${{ secrets.NAMESPACE }}
+        doctl serverless deploy do-function/
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        BUCKET: ${{ secrets.BUCKET }}
+
+    - name: Deploy preact app
+      run: |
+        npm i
+
+        git config user.name "$(git --no-pager log --format=format:'%an' -n 1)"
+        git config user.email "$(git --no-pager log --format=format:'%ae' -n 1)"
+        git remote set-url origin https://git:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git
+
+        npm run deploy
