@@ -13,7 +13,7 @@ import {Logo} from './logo';
 import config from '../../config/lander';
 import {signup} from '../../lib/submitter';
 
-const re = "/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;";
+const re = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$";
 
 const Home = (props, state) => {
     const defaultCampaign = config.campaigns[config.defaultCampaign];
@@ -26,13 +26,15 @@ const Home = (props, state) => {
     const [addr, setAddr] = useState("");
 
     const onSubmit = e => {
+        setWaitlist("Joining waitlist...");
+
         signup({
             addr: addr,
             campaign: props.matches.c,
         })
             .then(function() {
                 setWaitlist("Congratulations on joining the waitlist");
-                setAddr = "";
+                setAddr("");
             })
             .catch(function (error) {
                 setWaitlist("There was an error joining the waitlist. Please try again later");
@@ -68,7 +70,9 @@ const Home = (props, state) => {
                   </p>
 
                   <p>
-                    {waitlist}
+                    <strong className={style.waitlist}>
+                      {waitlist}
+                    </strong>
                   </p>
 
                   <div className={style.signup}>

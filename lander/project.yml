@@ -1,0 +1,13 @@
+packages:
+- name: lander
+  shared: false
+  functions:
+  - name: signups
+    runtime: go:1.20
+    web: true
+    limits:
+      memory: 128
+    environment:
+      AWS_ACCESS_KEY_ID: DO00D2JL2GYPHPFCUQZ2
+      AWS_SECRET_ACCESS_KEY: 24oOTQiNjGBtDcin3JPr8RqE5xYHQ3jHE6XqLpOvpNA
+      BUCKET: anko-signups

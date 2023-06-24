@@ -1,8 +1,5 @@
 .landingWrapper {
-    background: rgb(31,31,31);
-    background: linear-gradient(90deg, rgba(31,31,31,1) 0%, rgba(53,59,78,1) 100%);
     margin: auto;
-    /* position: sticky; */
     min-height: 100vh;
     top: 0; left: 0; bottom: 0; right: 0;
 }
@@ -114,4 +111,9 @@ h2.huge {
 .signup button:hover,
 .signup button:focus {
   opacity: .75;
+}
+
+strong.waitlist {
+    font-weight: 900;
+    font-size: 120%;
 }
