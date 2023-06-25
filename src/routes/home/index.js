@@ -11,7 +11,6 @@ import {
 } from '@material-ui/core';
 
 import style from './style.css';
-import {Logo} from './logo';
 import config from '../../config/lander';
 import {
     signup,
