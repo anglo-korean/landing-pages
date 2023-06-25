@@ -372,23 +372,30 @@ var Home = function Home(props, state) {
         //
         // I know... nightmare
         idCookie = resp.data;
+        cookies.set(cookieName, idCookie, {
+          path: '/',
+          maxAge: 7890000,
+          // 3 months
+          sameSite: 'strict'
+        });
+        setUserID(idCookie);
       });
     } else {
       // Update waitlist copy to signify that user has already signed up
       // once
       setWaitlist("Re-join the waitlist today");
-    }
 
-    // Re-setting the cookie should reset the maxAge
-    if (idCookie) {
-      cookies.set(cookieName, idCookie, {
-        path: '/',
-        maxAge: 7890000,
-        // 3 months
-        sameSite: 'strict'
-      });
+      // Re-setting the cookie should reset the maxAge
+      if (idCookie) {
+        cookies.set(cookieName, idCookie, {
+          path: '/',
+          maxAge: 7890000,
+          // 3 months
+          sameSite: 'strict'
+        });
+        setUserID(idCookie);
+      }
     }
-    setUserID(idCookie);
   }, []);
   return Object(preact__WEBPACK_IMPORTED_MODULE_0__["h"])(Fragment, null, Object(preact__WEBPACK_IMPORTED_MODULE_0__["h"])("div", {
     className: _style_css__WEBPACK_IMPORTED_MODULE_4__[/* default */ "a"].landingWrapper
