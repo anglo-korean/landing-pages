@@ -80,13 +80,19 @@ const Home = (props, state) => {
                     console.log(resp);
 
                     idCookie = resp.data;
-                    cookies.set(cookieName, idCookie, {
-                        path: '/',
-                        maxAge: 7890000, // 3 months
-                        sameSite: 'strict',
-                    });
                 })
+        } else {
+            // Update waitlist copy to signify that user has already signed up
+            // once
+            setWaitlist("Re-join the waitlist today");
         }
+
+        // Re-setting the cookie should reset the maxAge
+        cookies.set(cookieName, idCookie, {
+            path: '/',
+            maxAge: 7890000, // 3 months
+            sameSite: 'strict',
+        });
 
         setUserID(idCookie);
     }, [])
