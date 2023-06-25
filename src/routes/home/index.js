@@ -63,7 +63,11 @@ const Home = (props, state) => {
         const cookies = new Cookies();
         let idCookie = cookies.get(cookieName);
 
-        if (idCookie === undefined) {
+        // Check whether idCookie is truthy, or whether it has been
+        // persisted as the string 'undefined', which means that somehow
+        // we've taken an undefined values, stringified it, and saved as
+        // a cookie
+        if (!idCookie || idCookie == 'undefined') {
             initiate()
                 .then(function(resp) {
                     // initiate _does_ set a cookie, but against the
@@ -77,8 +81,6 @@ const Home = (props, state) => {
                     // domain.
                     //
                     // I know... nightmare
-                    console.log(resp);
-
                     idCookie = resp.data;
                 })
         } else {
@@ -88,11 +90,13 @@ const Home = (props, state) => {
         }
 
         // Re-setting the cookie should reset the maxAge
-        cookies.set(cookieName, idCookie, {
-            path: '/',
-            maxAge: 7890000, // 3 months
-            sameSite: 'strict',
-        });
+        if (idCookie) {
+            cookies.set(cookieName, idCookie, {
+                path: '/',
+                maxAge: 7890000, // 3 months
+                sameSite: 'strict',
+            });
+        }
 
         setUserID(idCookie);
     }, [])
