@@ -2,7 +2,9 @@ import {
     h,
 } from 'preact';
 
-import { useState, useCallback } from "preact/hooks";
+import { useState, useEffect } from "preact/hooks";
+
+import Cookies from 'universal-cookie';
 
 import {
     Grid,
@@ -11,9 +13,14 @@ import {
 import style from './style.css';
 import {Logo} from './logo';
 import config from '../../config/lander';
-import {signup} from '../../lib/submitter';
+import {
+    signup,
+    initiate,
+} from '../../lib/submitter';
 
 const re = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$";
+
+const cookieName = "AnkoID";
 
 const Home = (props, state) => {
     const defaultCampaign = config.campaigns[config.defaultCampaign];
@@ -24,11 +31,13 @@ const Home = (props, state) => {
 
     const [waitlist,setWaitlist] = useState("Join the waitlist today");
     const [addr, setAddr] = useState("");
+    const [userID, setUserID] = useState("");
 
     const onSubmit = e => {
         setWaitlist("Joining waitlist...");
 
         signup({
+            id: userID,
             addr: addr,
             campaign: props.matches.c,
         })
@@ -48,6 +57,45 @@ const Home = (props, state) => {
         const { value } = e.target;
         setAddr(value);
     };
+
+    // After Home renders, get an ID
+    useEffect(() => {
+        const cookies = new Cookies();
+        let idCookie = cookies.get(cookieName);
+
+        if (idCookie === undefined) {
+            initiate()
+                .then(function(resp) {
+                    // initiate _does_ set a cookie, but against the
+                    // digitalocean functions domain.
+                    //
+                    // This would be fine if the signup call had access
+                    // to that cookie, but it doesn't always (and, so, we
+                    // can't guarantee it'll be there).
+                    //
+                    // Thus, we must also set one here against the correct
+                    // domain.
+                    //
+                    // I know... nightmare
+                    console.log(resp);
+
+                    idCookie = resp.data;
+                })
+        } else {
+            // Update waitlist copy to signify that user has already signed up
+            // once
+            setWaitlist("Re-join the waitlist today");
+        }
+
+        // Re-setting the cookie should reset the maxAge
+        cookies.set(cookieName, idCookie, {
+            path: '/',
+            maxAge: 7890000, // 3 months
+            sameSite: 'strict',
+        });
+
+        setUserID(idCookie);
+    }, [])
 
     return (
         <>

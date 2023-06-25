@@ -3,13 +3,12 @@ package main
 import (
 	"bytes"
 	"context"
-	"encoding/base64"
 	"fmt"
 	"io"
 	"net/http"
 	"net/mail"
 	"os"
-	"strings"
+	"path"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -39,8 +38,27 @@ var (
 // and contains enough information to determine cohort
 // information
 type SignupEvent struct {
+	Metadata metadata `json:"http"`
+
 	EmailAddress string `json:"addr"`
 	Campaign     string `json:"campaign"`
+}
+
+type metadata struct {
+	Headers headers `json:"headers"`
+}
+
+type headers struct {
+	ID string `json:"x-anko-id"`
+}
+
+func (e SignupEvent) ID() string {
+	id := e.Metadata.Headers.ID
+	if id != "" {
+		return id
+	}
+
+	return fmt.Sprintf("unknown_%d", time.Now().Unix())
 }
 
 // Validate ensures data is, um, valid
@@ -71,7 +89,6 @@ func (e SignupEvent) Data() io.Reader {
 
 	data.WriteString(fmt.Sprintf("emailAddress=%q\n", e.EmailAddress))
 	data.WriteString(fmt.Sprintf("campaign=%q\n", e.Campaign))
-	data.WriteString(fmt.Sprintf("firstSeen=%d", time.Now().Unix()))
 
 	return data
 }
@@ -91,7 +108,9 @@ func Main(ctx context.Context, event SignupEvent) Response {
 		status = http.StatusBadRequest
 	}
 
-	key := base64.StdEncoding.EncodeToString([]byte(strings.ToLower(event.EmailAddress)))
+	id := event.ID()
+	key := path.Join(id, fmt.Sprint(time.Now().Unix()))
+
 	if _, err := client.Upload(&s3manager.UploadInput{
 		Bucket: aws.String(bucket),
 		Key:    aws.String(key),
