@@ -83,8 +83,9 @@ func Main(ctx context.Context, event Request) Response {
 
 	return Response{
 		Headers: map[string]string{
-			"X-Anko-Id":  id,
-			"Set-Cookie": fmt.Sprintf("AnkoID=%s; Max-Age=7890000; Version=", id),
+			"X-Anko-Id":    id,
+			"Set-Cookie":   fmt.Sprintf("AnkoID=%s; Max-Age=7890000; Version=", id),
+			"Content-Type": "text/plain",
 		},
 		StatusCode: status,
 		Body:       id,
