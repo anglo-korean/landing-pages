@@ -65,7 +65,7 @@ type Response struct {
 
 func Main(ctx context.Context, event Request) Response {
 	var (
-		status = http.StatusNoContent
+		status = http.StatusOK
 	)
 
 	id := event.ID()
