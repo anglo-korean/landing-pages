@@ -91,10 +91,6 @@ const Home = (props, state) => {
                     setUserID(idCookie);
                 })
         } else {
-            // Update waitlist copy to signify that user has already signed up
-            // once
-            setWaitlist("Re-join the waitlist today");
-
             // Re-setting the cookie should reset the maxAge
             if (idCookie) {
                 cookies.set(cookieName, idCookie, {
