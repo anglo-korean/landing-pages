@@ -2,7 +2,9 @@ import {
     h,
 } from 'preact';
 
-import { useState, useCallback } from "preact/hooks";
+import { useState, useEffect } from "preact/hooks";
+
+import Cookies from 'universal-cookie';
 
 import {
     Grid,
@@ -11,7 +13,10 @@ import {
 import style from './style.css';
 import {Logo} from './logo';
 import config from '../../config/lander';
-import {signup} from '../../lib/submitter';
+import {
+    signup,
+    initiate,
+} from '../../lib/submitter';
 
 const re = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$";
 
@@ -24,11 +29,13 @@ const Home = (props, state) => {
 
     const [waitlist,setWaitlist] = useState("Join the waitlist today");
     const [addr, setAddr] = useState("");
+    const [userID, setUserID] = useState("");
 
     const onSubmit = e => {
         setWaitlist("Joining waitlist...");
 
         signup({
+            id: userID,
             addr: addr,
             campaign: props.matches.c,
         })
@@ -48,6 +55,22 @@ const Home = (props, state) => {
         const { value } = e.target;
         setAddr(value);
     };
+
+    // After Home renders, get an ID
+    useEffect(() => {
+        const cookies = new Cookies();
+        let idCookie = cookies.get('AnkoID');
+
+        if (idCookie === undefined) {
+            initiate()
+                .then(function() {
+                    // initiate _should_ set the valid cookie;
+                    idCookie = cookies.get('AnkoID');
+                })
+        }
+
+        setUserID(idCookie);
+    }, [])
 
     return (
         <>
