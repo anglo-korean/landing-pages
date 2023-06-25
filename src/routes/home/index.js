@@ -20,6 +20,8 @@ import {
 
 const re = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$";
 
+const cookieName = "AnkoID";
+
 const Home = (props, state) => {
     const defaultCampaign = config.campaigns[config.defaultCampaign];
 
@@ -59,13 +61,30 @@ const Home = (props, state) => {
     // After Home renders, get an ID
     useEffect(() => {
         const cookies = new Cookies();
-        let idCookie = cookies.get('AnkoID');
+        let idCookie = cookies.get(cookieName);
 
         if (idCookie === undefined) {
             initiate()
-                .then(function() {
-                    // initiate _should_ set the valid cookie;
-                    idCookie = cookies.get('AnkoID');
+                .then(function(resp) {
+                    // initiate _does_ set a cookie, but against the
+                    // digitalocean functions domain.
+                    //
+                    // This would be fine if the signup call had access
+                    // to that cookie, but it doesn't always (and, so, we
+                    // can't guarantee it'll be there).
+                    //
+                    // Thus, we must also set one here against the correct
+                    // domain.
+                    //
+                    // I know... nightmare
+                    console.log(resp);
+
+                    idCookie = resp.data;
+                    cookies.set(cookieName, idCookie, {
+                        path: '/',
+                        maxAge: 7890000, // 3 months
+                        sameSite: 'strict',
+                    });
                 })
         }
 

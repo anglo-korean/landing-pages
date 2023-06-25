@@ -60,6 +60,7 @@ type headers struct {
 type Response struct {
 	Headers    map[string]string `json:"headers"`
 	StatusCode int               `json:"statusCode"`
+	Body       string            `json:"body"`
 }
 
 func Main(ctx context.Context, event Request) Response {
@@ -86,6 +87,7 @@ func Main(ctx context.Context, event Request) Response {
 			"Set-Cookie": fmt.Sprintf("AnkoID=%s; Max-Age=7890000; Version=", id),
 		},
 		StatusCode: status,
+		Body:       id,
 	}
 }
 
