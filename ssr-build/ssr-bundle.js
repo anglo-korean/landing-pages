@@ -353,7 +353,12 @@ var Home = function Home(props, state) {
   Object(preact_hooks__WEBPACK_IMPORTED_MODULE_1__[/* useEffect */ "d"])(function () {
     var cookies = new universal_cookie__WEBPACK_IMPORTED_MODULE_2__[/* default */ "a"]();
     var idCookie = cookies.get(cookieName);
-    if (idCookie === undefined) {
+
+    // Check whether idCookie is truthy, or whether it has been
+    // persisted as the string 'undefined', which means that somehow
+    // we've taken an undefined values, stringified it, and saved as
+    // a cookie
+    if (!idCookie || idCookie == 'undefined') {
       Object(_lib_submitter__WEBPACK_IMPORTED_MODULE_7__[/* initiate */ "a"])().then(function (resp) {
         // initiate _does_ set a cookie, but against the
         // digitalocean functions domain.
@@ -366,7 +371,6 @@ var Home = function Home(props, state) {
         // domain.
         //
         // I know... nightmare
-        console.log(resp);
         idCookie = resp.data;
       });
     } else {
@@ -376,12 +380,14 @@ var Home = function Home(props, state) {
     }
 
     // Re-setting the cookie should reset the maxAge
-    cookies.set(cookieName, idCookie, {
-      path: '/',
-      maxAge: 7890000,
-      // 3 months
-      sameSite: 'strict'
-    });
+    if (idCookie) {
+      cookies.set(cookieName, idCookie, {
+        path: '/',
+        maxAge: 7890000,
+        // 3 months
+        sameSite: 'strict'
+      });
+    }
     setUserID(idCookie);
   }, []);
   return Object(preact__WEBPACK_IMPORTED_MODULE_0__["h"])(Fragment, null, Object(preact__WEBPACK_IMPORTED_MODULE_0__["h"])("div", {
