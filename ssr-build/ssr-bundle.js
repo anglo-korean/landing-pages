@@ -87,6 +87,189 @@ module.exports =
 /************************************************************************/
 /******/ ({
 
+/***/ "/8r4":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/*!
+ * cookie
+ * Copyright(c) 2012-2014 Roman Shtylman
+ * Copyright(c) 2015 Douglas Christopher Wilson
+ * MIT Licensed
+ */
+
+
+
+/**
+ * Module exports.
+ * @public
+ */
+exports.parse = parse;
+exports.serialize = serialize;
+
+/**
+ * Module variables.
+ * @private
+ */
+
+var decode = decodeURIComponent;
+var encode = encodeURIComponent;
+
+/**
+ * RegExp to match field-content in RFC 7230 sec 3.2
+ *
+ * field-content = field-vchar [ 1*( SP / HTAB ) field-vchar ]
+ * field-vchar   = VCHAR / obs-text
+ * obs-text      = %x80-FF
+ */
+
+var fieldContentRegExp = /^[\u0009\u0020-\u007e\u0080-\u00ff]+$/;
+
+/**
+ * Parse a cookie header.
+ *
+ * Parse the given cookie header string into an object
+ * The object has the various cookies as keys(names) => values
+ *
+ * @param {string} str
+ * @param {object} [options]
+ * @return {object}
+ * @public
+ */
+
+function parse(str, options) {
+  if (typeof str !== 'string') {
+    throw new TypeError('argument str must be a string');
+  }
+  var obj = {};
+  var opt = options || {};
+  var pairs = str.split(';');
+  var dec = opt.decode || decode;
+  for (var i = 0; i < pairs.length; i++) {
+    var pair = pairs[i];
+    var index = pair.indexOf('=');
+
+    // skip things that don't look like key=value
+    if (index < 0) {
+      continue;
+    }
+    var key = pair.substring(0, index).trim();
+
+    // only assign once
+    if (undefined == obj[key]) {
+      var val = pair.substring(index + 1, pair.length).trim();
+
+      // quoted values
+      if (val[0] === '"') {
+        val = val.slice(1, -1);
+      }
+      obj[key] = tryDecode(val, dec);
+    }
+  }
+  return obj;
+}
+
+/**
+ * Serialize data into a cookie header.
+ *
+ * Serialize the a name value pair into a cookie string suitable for
+ * http headers. An optional options object specified cookie parameters.
+ *
+ * serialize('foo', 'bar', { httpOnly: true })
+ *   => "foo=bar; httpOnly"
+ *
+ * @param {string} name
+ * @param {string} val
+ * @param {object} [options]
+ * @return {string}
+ * @public
+ */
+
+function serialize(name, val, options) {
+  var opt = options || {};
+  var enc = opt.encode || encode;
+  if (typeof enc !== 'function') {
+    throw new TypeError('option encode is invalid');
+  }
+  if (!fieldContentRegExp.test(name)) {
+    throw new TypeError('argument name is invalid');
+  }
+  var value = enc(val);
+  if (value && !fieldContentRegExp.test(value)) {
+    throw new TypeError('argument val is invalid');
+  }
+  var str = name + '=' + value;
+  if (null != opt.maxAge) {
+    var maxAge = opt.maxAge - 0;
+    if (isNaN(maxAge) || !isFinite(maxAge)) {
+      throw new TypeError('option maxAge is invalid');
+    }
+    str += '; Max-Age=' + Math.floor(maxAge);
+  }
+  if (opt.domain) {
+    if (!fieldContentRegExp.test(opt.domain)) {
+      throw new TypeError('option domain is invalid');
+    }
+    str += '; Domain=' + opt.domain;
+  }
+  if (opt.path) {
+    if (!fieldContentRegExp.test(opt.path)) {
+      throw new TypeError('option path is invalid');
+    }
+    str += '; Path=' + opt.path;
+  }
+  if (opt.expires) {
+    if (typeof opt.expires.toUTCString !== 'function') {
+      throw new TypeError('option expires is invalid');
+    }
+    str += '; Expires=' + opt.expires.toUTCString();
+  }
+  if (opt.httpOnly) {
+    str += '; HttpOnly';
+  }
+  if (opt.secure) {
+    str += '; Secure';
+  }
+  if (opt.sameSite) {
+    var sameSite = typeof opt.sameSite === 'string' ? opt.sameSite.toLowerCase() : opt.sameSite;
+    switch (sameSite) {
+      case true:
+        str += '; SameSite=Strict';
+        break;
+      case 'lax':
+        str += '; SameSite=Lax';
+        break;
+      case 'strict':
+        str += '; SameSite=Strict';
+        break;
+      case 'none':
+        str += '; SameSite=None';
+        break;
+      default:
+        throw new TypeError('option sameSite is invalid');
+    }
+  }
+  return str;
+}
+
+/**
+ * Try decoding a string using a decoding function.
+ *
+ * @param {string} str
+ * @param {function} decode
+ * @private
+ */
+
+function tryDecode(str, decode) {
+  try {
+    return decode(str);
+  } catch (e) {
+    return str;
+  }
+}
+
+/***/ }),
+
 /***/ "0942":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -108,12 +291,13 @@ function _assertThisInitialized(self) {
 /* WEBPACK VAR INJECTION */(function(Fragment) {/* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("HteQ");
 /* harmony import */ var preact__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(preact__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var preact_hooks__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("QRet");
-/* harmony import */ var _material_ui_core__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("V2/N");
-/* harmony import */ var _style_css__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("FA6U");
-/* harmony import */ var _logo__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__("Fzeu");
-/* harmony import */ var _config_lander__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__("soYJ");
-var _config_lander__WEBPACK_IMPORTED_MODULE_5___namespace = /*#__PURE__*/__webpack_require__.t("soYJ", 1);
-/* harmony import */ var _lib_submitter__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__("RQEC");
+/* harmony import */ var universal_cookie__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("vj+v");
+/* harmony import */ var _material_ui_core__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("V2/N");
+/* harmony import */ var _style_css__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__("FA6U");
+/* harmony import */ var _logo__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__("Fzeu");
+/* harmony import */ var _config_lander__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__("soYJ");
+var _config_lander__WEBPACK_IMPORTED_MODULE_6___namespace = /*#__PURE__*/__webpack_require__.t("soYJ", 1);
+/* harmony import */ var _lib_submitter__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__("RQEC");
 function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
 function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
@@ -127,10 +311,12 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
 
 
+
 var re = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$";
+var cookieName = "AnkoID";
 var Home = function Home(props, state) {
-  var defaultCampaign = _config_lander__WEBPACK_IMPORTED_MODULE_5__.campaigns[_config_lander__WEBPACK_IMPORTED_MODULE_5__.defaultCampaign];
-  var campaign = props.matches.c ? _config_lander__WEBPACK_IMPORTED_MODULE_5__.campaigns[props.matches.c] || defaultCampaign : defaultCampaign;
+  var defaultCampaign = _config_lander__WEBPACK_IMPORTED_MODULE_6__.campaigns[_config_lander__WEBPACK_IMPORTED_MODULE_6__.defaultCampaign];
+  var campaign = props.matches.c ? _config_lander__WEBPACK_IMPORTED_MODULE_6__.campaigns[props.matches.c] || defaultCampaign : defaultCampaign;
   var _useState = Object(preact_hooks__WEBPACK_IMPORTED_MODULE_1__[/* useState */ "k"])("Join the waitlist today"),
     _useState2 = _slicedToArray(_useState, 2),
     waitlist = _useState2[0],
@@ -139,9 +325,14 @@ var Home = function Home(props, state) {
     _useState4 = _slicedToArray(_useState3, 2),
     addr = _useState4[0],
     setAddr = _useState4[1];
+  var _useState5 = Object(preact_hooks__WEBPACK_IMPORTED_MODULE_1__[/* useState */ "k"])(""),
+    _useState6 = _slicedToArray(_useState5, 2),
+    userID = _useState6[0],
+    setUserID = _useState6[1];
   var onSubmit = function onSubmit(e) {
     setWaitlist("Joining waitlist...");
-    Object(_lib_submitter__WEBPACK_IMPORTED_MODULE_6__[/* signup */ "a"])({
+    Object(_lib_submitter__WEBPACK_IMPORTED_MODULE_7__[/* signup */ "b"])({
+      id: userID,
       addr: addr,
       campaign: props.matches.c
     }).then(function () {
@@ -157,55 +348,91 @@ var Home = function Home(props, state) {
     var value = e.target.value;
     setAddr(value);
   };
+
+  // After Home renders, get an ID
+  Object(preact_hooks__WEBPACK_IMPORTED_MODULE_1__[/* useEffect */ "d"])(function () {
+    var cookies = new universal_cookie__WEBPACK_IMPORTED_MODULE_2__[/* default */ "a"]();
+    var idCookie = cookies.get(cookieName);
+    if (idCookie === undefined) {
+      Object(_lib_submitter__WEBPACK_IMPORTED_MODULE_7__[/* initiate */ "a"])().then(function (resp) {
+        // initiate _does_ set a cookie, but against the
+        // digitalocean functions domain.
+        //
+        // This would be fine if the signup call had access
+        // to that cookie, but it doesn't always (and, so, we
+        // can't guarantee it'll be there).
+        //
+        // Thus, we must also set one here against the correct
+        // domain.
+        //
+        // I know... nightmare
+        console.log(resp);
+        idCookie = resp.data;
+      });
+    } else {
+      // Update waitlist copy to signify that user has already signed up
+      // once
+      setWaitlist("Re-join the waitlist today");
+    }
+
+    // Re-setting the cookie should reset the maxAge
+    cookies.set(cookieName, idCookie, {
+      path: '/',
+      maxAge: 7890000,
+      // 3 months
+      sameSite: 'strict'
+    });
+    setUserID(idCookie);
+  }, []);
   return Object(preact__WEBPACK_IMPORTED_MODULE_0__["h"])(Fragment, null, Object(preact__WEBPACK_IMPORTED_MODULE_0__["h"])("div", {
-    className: _style_css__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"].landingWrapper
+    className: _style_css__WEBPACK_IMPORTED_MODULE_4__[/* default */ "a"].landingWrapper
   }, Object(preact__WEBPACK_IMPORTED_MODULE_0__["h"])("div", {
     className: "App"
-  }, Object(preact__WEBPACK_IMPORTED_MODULE_0__["h"])(_material_ui_core__WEBPACK_IMPORTED_MODULE_2__[/* default */ "a"], {
+  }, Object(preact__WEBPACK_IMPORTED_MODULE_0__["h"])(_material_ui_core__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"], {
     container: true,
-    className: _style_css__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"].landing,
+    className: _style_css__WEBPACK_IMPORTED_MODULE_4__[/* default */ "a"].landing,
     style: {
       "marginBottom": "64px"
     }
-  }, Object(preact__WEBPACK_IMPORTED_MODULE_0__["h"])(_material_ui_core__WEBPACK_IMPORTED_MODULE_2__[/* default */ "a"], {
+  }, Object(preact__WEBPACK_IMPORTED_MODULE_0__["h"])(_material_ui_core__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"], {
     item: true,
     sm: false,
     lg: 2
-  }, " "), Object(preact__WEBPACK_IMPORTED_MODULE_0__["h"])(_material_ui_core__WEBPACK_IMPORTED_MODULE_2__[/* default */ "a"], {
+  }, " "), Object(preact__WEBPACK_IMPORTED_MODULE_0__["h"])(_material_ui_core__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"], {
     item: true,
     sm: 12,
     lg: 8,
-    className: _style_css__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"].hero
-  }, Object(preact__WEBPACK_IMPORTED_MODULE_0__["h"])(_material_ui_core__WEBPACK_IMPORTED_MODULE_2__[/* default */ "a"], {
+    className: _style_css__WEBPACK_IMPORTED_MODULE_4__[/* default */ "a"].hero
+  }, Object(preact__WEBPACK_IMPORTED_MODULE_0__["h"])(_material_ui_core__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"], {
     item: true,
     sm: 12,
     md: 6
   }, Object(preact__WEBPACK_IMPORTED_MODULE_0__["h"])("h1", {
-    className: _style_css__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"].huge
-  }, campaign.headline))), Object(preact__WEBPACK_IMPORTED_MODULE_0__["h"])(_material_ui_core__WEBPACK_IMPORTED_MODULE_2__[/* default */ "a"], {
+    className: _style_css__WEBPACK_IMPORTED_MODULE_4__[/* default */ "a"].huge
+  }, campaign.headline))), Object(preact__WEBPACK_IMPORTED_MODULE_0__["h"])(_material_ui_core__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"], {
     item: true,
     sm: false,
     lg: 2
-  }, " "), Object(preact__WEBPACK_IMPORTED_MODULE_0__["h"])(_material_ui_core__WEBPACK_IMPORTED_MODULE_2__[/* default */ "a"], {
+  }, " "), Object(preact__WEBPACK_IMPORTED_MODULE_0__["h"])(_material_ui_core__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"], {
     item: true,
     sm: false,
     lg: 3
-  }, " "), Object(preact__WEBPACK_IMPORTED_MODULE_0__["h"])(_material_ui_core__WEBPACK_IMPORTED_MODULE_2__[/* default */ "a"], {
+  }, " "), Object(preact__WEBPACK_IMPORTED_MODULE_0__["h"])(_material_ui_core__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"], {
     item: true,
     sm: 12,
     lg: 6,
-    className: _style_css__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"].tagline
+    className: _style_css__WEBPACK_IMPORTED_MODULE_4__[/* default */ "a"].tagline
   }, Object(preact__WEBPACK_IMPORTED_MODULE_0__["h"])("p", null, campaign.tagline), Object(preact__WEBPACK_IMPORTED_MODULE_0__["h"])("p", null, Object(preact__WEBPACK_IMPORTED_MODULE_0__["h"])("strong", {
-    className: _style_css__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"].waitlist
+    className: _style_css__WEBPACK_IMPORTED_MODULE_4__[/* default */ "a"].waitlist
   }, waitlist)), Object(preact__WEBPACK_IMPORTED_MODULE_0__["h"])("div", {
-    className: _style_css__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"].signup
+    className: _style_css__WEBPACK_IMPORTED_MODULE_4__[/* default */ "a"].signup
   }, Object(preact__WEBPACK_IMPORTED_MODULE_0__["h"])("form", {
     onSubmit: onSubmit
   }, Object(preact__WEBPACK_IMPORTED_MODULE_0__["h"])("button", {
     type: "submit",
     role: "button"
   }, campaign.cta), Object(preact__WEBPACK_IMPORTED_MODULE_0__["h"])("div", {
-    className: _style_css__WEBPACK_IMPORTED_MODULE_3__[/* default */ "a"].inputDiv
+    className: _style_css__WEBPACK_IMPORTED_MODULE_4__[/* default */ "a"].inputDiv
   }, Object(preact__WEBPACK_IMPORTED_MODULE_0__["h"])("input", {
     type: "email",
     placeholder: campaign.hint,
@@ -1151,7 +1378,8 @@ var app_App = function App() {
 "use strict";
 
 // EXPORTS
-__webpack_require__.d(__webpack_exports__, "a", function() { return /* binding */ signup; });
+__webpack_require__.d(__webpack_exports__, "b", function() { return /* binding */ signup; });
+__webpack_require__.d(__webpack_exports__, "a", function() { return /* binding */ initiate; });
 
 // CONCATENATED MODULE: ../node_modules/redaxios/dist/redaxios.module.js
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
@@ -1217,25 +1445,41 @@ function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" =
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
-var landerAddr = "https://faas-lon1-917a94a7.doserverless.co/api/v1/web/fn-a558965b-aa27-4890-9eec-0b659e229e39/lander/signups";
+var signupsAddr = "https://faas-lon1-917a94a7.doserverless.co/api/v1/web/fn-a558965b-aa27-4890-9eec-0b659e229e39/lander/signups";
+var initAddr = "https://faas-lon1-917a94a7.doserverless.co/api/v1/web/fn-a558965b-aa27-4890-9eec-0b659e229e39/lander/initialiser";
 var signup = /*#__PURE__*/function () {
   var _ref2 = _asyncToGenerator(function* (_ref) {
-    var addr = _ref.addr,
+    var id = _ref.id,
+      addr = _ref.addr,
       campaign = _ref.campaign;
     var fd = new FormData();
     fd.append('addr', addr);
     fd.append('campaign', campaign || 'default');
     return redaxios_module({
       method: 'post',
-      url: landerAddr,
+      url: signupsAddr,
       data: {
         addr: addr,
         campaign: campaign
+      },
+      headers: {
+        'x-anko-id': id
       }
     });
   });
   return function signup(_x) {
     return _ref2.apply(this, arguments);
+  };
+}();
+var initiate = /*#__PURE__*/function () {
+  var _ref3 = _asyncToGenerator(function* () {
+    return redaxios_module({
+      method: 'get',
+      url: initAddr
+    });
+  });
+  return function initiate() {
+    return _ref3.apply(this, arguments);
   };
 }();
 
@@ -7098,6 +7342,167 @@ module.exports = JSON.parse("{\"campaigns\":{\"ep\":{\"headline\":\"Extraordinar
 function _iterableToArray(iter) {
   if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter);
 }
+
+/***/ }),
+
+/***/ "vj+v":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+
+// EXTERNAL MODULE: ../node_modules/universal-cookie/node_modules/cookie/index.js
+var cookie = __webpack_require__("/8r4");
+
+// CONCATENATED MODULE: ../node_modules/universal-cookie/es6/utils.js
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+
+function hasDocumentCookie() {
+  // Can we get/set cookies on document.cookie?
+  return (typeof document === "undefined" ? "undefined" : _typeof(document)) === 'object' && typeof document.cookie === 'string';
+}
+function cleanCookies() {
+  document.cookie.split(';').forEach(function (c) {
+    document.cookie = c.replace(/^ +/, '').replace(/=.*/, '=;expires=' + new Date().toUTCString() + ';path=/');
+  });
+}
+function parseCookies(cookies, options) {
+  if (typeof cookies === 'string') {
+    return cookie["parse"](cookies, options);
+  } else if (_typeof(cookies) === 'object' && cookies !== null) {
+    return cookies;
+  } else {
+    return {};
+  }
+}
+function isParsingCookie(value, doNotParse) {
+  if (typeof doNotParse === 'undefined') {
+    // We guess if the cookie start with { or [, it has been serialized
+    doNotParse = !value || value[0] !== '{' && value[0] !== '[' && value[0] !== '"';
+  }
+  return !doNotParse;
+}
+function readCookie(value, options) {
+  if (options === void 0) {
+    options = {};
+  }
+  var cleanValue = cleanupCookieValue(value);
+  if (isParsingCookie(cleanValue, options.doNotParse)) {
+    try {
+      return JSON.parse(cleanValue);
+    } catch (e) {
+      // At least we tried
+    }
+  }
+  // Ignore clean value if we failed the deserialization
+  // It is not relevant anymore to trim those values
+  return value;
+}
+function cleanupCookieValue(value) {
+  // express prepend j: before serializing a cookie
+  if (value && value[0] === 'j' && value[1] === ':') {
+    return value.substr(2);
+  }
+  return value;
+}
+// CONCATENATED MODULE: ../node_modules/universal-cookie/es6/Cookies.js
+function Cookies_typeof(obj) { "@babel/helpers - typeof"; return Cookies_typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, Cookies_typeof(obj); }
+var __assign = undefined && undefined.__assign || function () {
+  __assign = Object.assign || function (t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+      s = arguments[i];
+      for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
+    }
+    return t;
+  };
+  return __assign.apply(this, arguments);
+};
+
+
+var Cookies_Cookies = /** @class */function () {
+  function Cookies(cookies, options) {
+    var _this = this;
+    this.changeListeners = [];
+    this.HAS_DOCUMENT_COOKIE = false;
+    this.cookies = parseCookies(cookies, options);
+    new Promise(function () {
+      _this.HAS_DOCUMENT_COOKIE = hasDocumentCookie();
+    }).catch(function () {});
+  }
+  Cookies.prototype._updateBrowserValues = function (parseOptions) {
+    if (!this.HAS_DOCUMENT_COOKIE) {
+      return;
+    }
+    this.cookies = cookie["parse"](document.cookie, parseOptions);
+  };
+  Cookies.prototype._emitChange = function (params) {
+    for (var i = 0; i < this.changeListeners.length; ++i) {
+      this.changeListeners[i](params);
+    }
+  };
+  Cookies.prototype.get = function (name, options, parseOptions) {
+    if (options === void 0) {
+      options = {};
+    }
+    this._updateBrowserValues(parseOptions);
+    return readCookie(this.cookies[name], options);
+  };
+  Cookies.prototype.getAll = function (options, parseOptions) {
+    if (options === void 0) {
+      options = {};
+    }
+    this._updateBrowserValues(parseOptions);
+    var result = {};
+    for (var name_1 in this.cookies) {
+      result[name_1] = readCookie(this.cookies[name_1], options);
+    }
+    return result;
+  };
+  Cookies.prototype.set = function (name, value, options) {
+    var _a;
+    if (Cookies_typeof(value) === 'object') {
+      value = JSON.stringify(value);
+    }
+    this.cookies = __assign(__assign({}, this.cookies), (_a = {}, _a[name] = value, _a));
+    if (this.HAS_DOCUMENT_COOKIE) {
+      document.cookie = cookie["serialize"](name, value, options);
+    }
+    this._emitChange({
+      name: name,
+      value: value,
+      options: options
+    });
+  };
+  Cookies.prototype.remove = function (name, options) {
+    var finalOptions = options = __assign(__assign({}, options), {
+      expires: new Date(1970, 1, 1, 0, 0, 1),
+      maxAge: 0
+    });
+    this.cookies = __assign({}, this.cookies);
+    delete this.cookies[name];
+    if (this.HAS_DOCUMENT_COOKIE) {
+      document.cookie = cookie["serialize"](name, '', finalOptions);
+    }
+    this._emitChange({
+      name: name,
+      value: undefined,
+      options: options
+    });
+  };
+  Cookies.prototype.addChangeListener = function (callback) {
+    this.changeListeners.push(callback);
+  };
+  Cookies.prototype.removeChangeListener = function (callback) {
+    var idx = this.changeListeners.indexOf(callback);
+    if (idx >= 0) {
+      this.changeListeners.splice(idx, 1);
+    }
+  };
+  return Cookies;
+}();
+/* harmony default export */ var es6_Cookies = (Cookies_Cookies);
+// CONCATENATED MODULE: ../node_modules/universal-cookie/es6/index.js
+
+/* harmony default export */ var es6 = __webpack_exports__["a"] = (es6_Cookies);
 
 /***/ })
 
